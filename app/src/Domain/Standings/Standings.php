@@ -8,6 +8,7 @@ namespace BallGame\Domain\Standings;
 use BallGame\Domain\Match\Match;
 use BallGame\Domain\RuleBook\RuleBookInterface;
 use BallGame\Domain\Team\Position;
+use BallGame\Infrastructure\MatchRepository;
 
 class Standings
 {
@@ -17,28 +18,32 @@ class Standings
     protected $positions;
 
     /**
-     * @var Match[]
-     */
-    private $matches;
-
-    /**
      * @var RuleBookInterface
      */
     private $ruleBook;
 
-    public function __construct(RuleBookInterface $ruleBook)
+    /**
+     * @var MatchRepository
+     */
+    private $matchRepository;
+
+    public function __construct(
+        RuleBookInterface $ruleBook,
+        MatchRepository $matchRepository
+    )
     {
         $this->ruleBook = $ruleBook;
+        $this->matchRepository = $matchRepository;
     }
 
     public function record(Match $match)
     {
-        $this->matches[] = $match;
+        $this->matchRepository->save($match);
     }
 
     public function getSortedStandings()
     {
-        foreach ($this->matches as $match) {
+        foreach ($this->matchRepository->findAll() as $match) {
             $homeTeamPosition = $this->getHomeTeamPosition($match);
             $awayTeamPosition = $this->getAwayTeamPosition($match);
 
