@@ -39,6 +39,14 @@ class PositionTest extends TestCase
         $this->assertSame(0, $this->position->getPoints());
     }
 
+    public function testGetPointsWhenWinAndDrawAreRecorded()
+    {
+        $this->position->recordWin();
+        $this->position->recordDraw();
+
+        $this->assertSame(4, $this->position->getPoints());
+    }
+
     public function testGetGoalsScoredWhenNoMatchesHaveBeenPlayed()
     {
         $this->assertSame(0, $this->position->getGoalsScored());

@@ -50,11 +50,20 @@ class Standings
             // Home team won
             if ($match->getHomeTeamPoints() > $match->getAwayTeamPoints()) {
                 $homeTeamPosition->recordWin();
+                $awayTeamPosition->recordLoss();
             }
 
             // Away team won
             if ($match->getAwayTeamPoints() > $match->getHomeTeamPoints()) {
                 $awayTeamPosition->recordWin();
+                $homeTeamPosition->recordLoss();
+            }
+
+            // Draw
+            if ($match->getHomeTeamPoints() === $match->getAwayTeamPoints())
+            {
+                $homeTeamPosition->recordDraw();
+                $awayTeamPosition->recordDraw();
             }
 
             $homeTeamPosition->recordGoalsScored($match->getHomeTeamPoints());
@@ -71,7 +80,10 @@ class Standings
                 $position->getTeam()->getName(),
                 $position->getGoalsScored(),
                 $position->getGoalsReceived(),
-                $position->getPoints()
+                $position->getPoints(),
+                $position->getWins(),
+                $position->getLoses(),
+                $position->getDraws()
             ];
         }
 

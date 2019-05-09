@@ -11,6 +11,8 @@ class Position
 
     private $losses = 0;
 
+    private $draws = 0;
+
     private $goalsScored = 0;
 
     private $goalsReceived = 0;
@@ -35,6 +37,11 @@ class Position
         $this->losses += 1;
     }
 
+    public function recordDraw()
+    {
+        $this->draws += 1;
+    }
+
     public function recordGoalsScored(int $goals)
     {
         $this->goalsScored += $goals;
@@ -47,7 +54,7 @@ class Position
 
     public function getPoints()
     {
-        return $this->wins * 3;
+        return $this->wins * 3 + $this->draws;
     }
 
     public function getGoalsScored()
@@ -63,5 +70,20 @@ class Position
     public function getTeam(): Team
     {
         return $this->team;
+    }
+
+    public function getWins()
+    {
+        return $this->wins;
+    }
+
+    public function getLoses()
+    {
+        return $this->losses;
+    }
+
+    public function getDraws()
+    {
+        return $this->draws;
     }
 }

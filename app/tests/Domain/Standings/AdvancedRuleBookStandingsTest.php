@@ -43,14 +43,15 @@ class AdvancedRuleBookStandingsTest extends TestCase
 
         $this->matchRepository->method('findAll')->willReturn([
             Match::create($elephants, $tigers, 3, 1),
-            Match::create($elephants, $tigers, 0, 1)
+            Match::create($elephants, $tigers, 0, 1),
+            Match::create($elephants, $tigers, 0, 0)
         ]);
 
         $actualSortedStandings = $this->standings->getSortedStandings();
 
         $expectedStandings = [
-            ['Elephants', 3, 2, 3],
-            ['Tigers', 2, 3, 3],
+            ['Elephants', 3, 2, 4, 1, 1, 1],
+            ['Tigers',    2, 3, 4, 1, 1, 1],
         ];
 
         $this->assertSame($expectedStandings, $actualSortedStandings);

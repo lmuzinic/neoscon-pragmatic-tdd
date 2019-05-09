@@ -37,8 +37,8 @@ class SimpleRuleBookStandingsTest extends TestCase
         $actualSortedStandings = $this->standings->getSortedStandings();
 
         $expectedStandings = [
-            ['Elephants', 3, 2, 3],
-            ['Tigers', 2, 3, 0],
+            ['Elephants', 3, 2, 3, 1, 0, 0],
+            ['Tigers',    2, 3, 0, 0, 1, 0],
         ];
 
         $this->assertSame($expectedStandings, $actualSortedStandings);
@@ -56,8 +56,8 @@ class SimpleRuleBookStandingsTest extends TestCase
         $actualSortedStandings = $this->standings->getSortedStandings();
 
         $expectedStandings = [
-            ['Tigers', 1, 0, 3],
-            ['Elephants', 0, 1, 0],
+            ['Tigers',    1, 0, 3, 1, 0, 0],
+            ['Elephants', 0, 1, 0, 0, 1, 0],
         ];
 
         $this->assertSame($expectedStandings, $actualSortedStandings);
