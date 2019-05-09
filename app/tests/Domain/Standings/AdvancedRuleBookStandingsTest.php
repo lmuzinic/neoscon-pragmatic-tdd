@@ -9,6 +9,7 @@ use BallGame\Domain\RuleBook\SimpleRuleBook;
 use BallGame\Domain\Standings\Standings;
 use BallGame\Domain\Team\Team;
 use BallGame\Infrastructure\MatchRepository;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class AdvancedRuleBookStandingsTest extends TestCase
@@ -18,11 +19,20 @@ class AdvancedRuleBookStandingsTest extends TestCase
      */
     protected $standings;
 
+    /**
+     * @var MatchRepository|MockObject
+     */
+    protected $matchRepository;
+
     public function setUp()
     {
+        $this->matchRepository = $this->getMockBuilder(MatchRepository::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $this->standings = new Standings(
             new AdvancedRuleBook(),
-            new MatchRepository()
+            $this->matchRepository
         );
     }
 
@@ -31,11 +41,10 @@ class AdvancedRuleBookStandingsTest extends TestCase
         $elephants = Team::create('Elephants');
         $tigers = Team::create('Tigers');
 
-        $match = Match::create($elephants, $tigers, 3, 1);
-        $this->standings->record($match);
-
-        $match = Match::create($elephants, $tigers, 0, 1);
-        $this->standings->record($match);
+        $this->matchRepository->method('findAll')->willReturn([
+            Match::create($elephants, $tigers, 3, 1),
+            Match::create($elephants, $tigers, 0, 1)
+        ]);
 
         $actualSortedStandings = $this->standings->getSortedStandings();
 
