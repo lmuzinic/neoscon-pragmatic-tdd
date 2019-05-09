@@ -28,14 +28,8 @@ class Standings
     public function getSortedStandings()
     {
         foreach ($this->matches as $match) {
-            if (!isset($this->positions[spl_object_hash($match->getHomeTeam())])) {
-                $this->positions[spl_object_hash($match->getHomeTeam())] = new Position($match->getHomeTeam());
-            }
-            $homeTeamPosition = $this->positions[spl_object_hash($match->getHomeTeam())];
-            if (!isset($this->positions[spl_object_hash($match->getAwayTeam())])) {
-                $this->positions[spl_object_hash($match->getAwayTeam())] = new Position($match->getAwayTeam());
-            }
-            $awayTeamStanding =  $this->positions[spl_object_hash($match->getAwayTeam())];
+            $homeTeamPosition = $this->getHomeTeamPosition($match);
+            $awayTeamPosition = $this->getAwayTeamPosition($match);
 
             // Home team won
             if ($match->getHomeTeamPoints() > $match->getAwayTeamPoints()) {
@@ -44,12 +38,13 @@ class Standings
 
             // Away team won
             if ($match->getAwayTeamPoints() > $match->getHomeTeamPoints()) {
-                $awayTeamStanding->recordWin();
+                $awayTeamPosition->recordWin();
             }
+
             $homeTeamPosition->recordGoalsScored($match->getHomeTeamPoints());
             $homeTeamPosition->recordGoalsReceived($match->getAwayTeamPoints());
-            $awayTeamStanding->recordGoalsScored($match->getAwayTeamPoints());
-            $awayTeamStanding->recordGoalsReceived($match->getHomeTeamPoints());
+            $awayTeamPosition->recordGoalsScored($match->getAwayTeamPoints());
+            $awayTeamPosition->recordGoalsReceived($match->getHomeTeamPoints());
         }
 
         uasort($this->positions, function (Position $teamA, Position $teamB)
@@ -57,22 +52,50 @@ class Standings
             if ($teamA->getPoints() > $teamB->getPoints()) {
                 return -1;
             }
+
             if ($teamB->getPoints() > $teamA->getPoints()) {
                 return 1;
             }
+
             return 0;
         });
 
         $finalStandings = [];
-        foreach ($this->positions as $teamStanding) {
+        foreach ($this->positions as $position) {
             $finalStandings[] = [
-                $teamStanding->getTeam()->getName(),
-                $teamStanding->getGoalsScored(),
-                $teamStanding->getGoalsReceived(),
-                $teamStanding->getPoints()
+                $position->getTeam()->getName(),
+                $position->getGoalsScored(),
+                $position->getGoalsReceived(),
+                $position->getPoints()
             ];
         }
 
         return $finalStandings;
+    }
+
+    /**
+     * @param Match $match
+     * @return Position
+     */
+    private function getHomeTeamPosition(Match $match): Position
+    {
+        if (!isset($this->positions[sha1($match->getHomeTeam()->getName())])) {
+            $this->positions[sha1($match->getHomeTeam()->getName())] = new Position($match->getHomeTeam());
+        }
+
+        return $this->positions[sha1($match->getHomeTeam()->getName())];
+    }
+
+    /**
+     * @param Match $match
+     * @return Position
+     */
+    private function getAwayTeamPosition(Match $match): Position
+    {
+        if (!isset($this->positions[sha1($match->getAwayTeam()->getName())])) {
+            $this->positions[sha1($match->getAwayTeam()->getName())] = new Position($match->getAwayTeam());
+        }
+
+        return $this->positions[sha1($match->getAwayTeam()->getName())];
     }
 }
