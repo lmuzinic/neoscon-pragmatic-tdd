@@ -4,12 +4,23 @@ declare(strict_types=1);
 namespace BallGame\Tests\Domain\Standings;
 
 use BallGame\Domain\Match\Match;
+use BallGame\Domain\RuleBook\SimpleRuleBook;
 use BallGame\Domain\Standings\Standings;
 use BallGame\Domain\Team\Team;
 use PHPUnit\Framework\TestCase;
 
-class StandingsTest extends TestCase
+class SimpleRuleBookStandingsTest extends TestCase
 {
+    /**
+     * @var Standings
+     */
+    protected $standings;
+
+    public function setUp()
+    {
+        $this->standings = new Standings(new SimpleRuleBook());
+    }
+
     public function testGetSortedStandings()
     {
         $elephants = Team::create('Elephants');
@@ -17,11 +28,9 @@ class StandingsTest extends TestCase
 
         $match = Match::create($elephants, $tigers, 3, 2);
 
-        $standings = new Standings();
+        $this->standings->record($match);
 
-        $standings->record($match);
-
-        $actualSortedStandings = $standings->getSortedStandings();
+        $actualSortedStandings = $this->standings->getSortedStandings();
 
         $expectedStandings = [
             ['Elephants', 3, 2, 3],
@@ -38,11 +47,9 @@ class StandingsTest extends TestCase
 
         $match = Match::create($elephants, $tigers, 0, 1);
 
-        $standings = new Standings();
+        $this->standings->record($match);
 
-        $standings->record($match);
-
-        $actualSortedStandings = $standings->getSortedStandings();
+        $actualSortedStandings = $this->standings->getSortedStandings();
 
         $expectedStandings = [
             ['Tigers', 1, 0, 3],
